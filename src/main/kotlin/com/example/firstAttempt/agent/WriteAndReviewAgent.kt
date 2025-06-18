@@ -104,7 +104,7 @@ class WriteAndReviewAgent(
         """.trimIndent()
             )
 
-    @AchievesGoal("The user has been greeted")
+    @AchievesGoal("The noble story creation")
     @Action
     fun reviewStory(userInput: UserInput, story: Story, context: OperationContext): ReviewedStory {
         val review = context.promptRunner(
@@ -127,7 +127,7 @@ class WriteAndReviewAgent(
         return ReviewedStory(
             story = story,
             review = review,
-            reviewer = Reviewer,
+            reviewer = Critiquer,
         )
     }
 
