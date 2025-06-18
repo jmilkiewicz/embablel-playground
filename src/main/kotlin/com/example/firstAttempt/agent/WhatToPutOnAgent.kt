@@ -21,6 +21,8 @@ import com.embabel.agent.api.annotation.Agent
 import com.embabel.agent.api.annotation.using
 import com.embabel.agent.api.common.OperationContext
 import com.embabel.agent.api.common.create
+import com.embabel.agent.api.common.createObject
+import com.embabel.agent.api.common.createObjectIfPossible
 import com.embabel.agent.domain.io.UserInput
 import com.embabel.agent.domain.library.HasContent
 import com.embabel.common.ai.model.LlmOptions
@@ -100,8 +102,7 @@ class WhatToPutOnAgent(
     fun getLocation(userInput: UserInput): Location =
         using(
             LlmOptions(criteria = Auto)
-        ).withPromptContributor(Explainer)
-            .create(
+        ).createObject(
                 """
              Create Location with lat and longitude from this user input including name extracted from user input 
              ${userInput.content}
