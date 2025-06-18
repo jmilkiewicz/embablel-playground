@@ -18,9 +18,9 @@ package com.example.firstAttempt.agent
 import com.embabel.agent.api.annotation.AchievesGoal
 import com.embabel.agent.api.annotation.Action
 import com.embabel.agent.api.annotation.Agent
+import com.embabel.agent.api.annotation.fromForm
 import com.embabel.agent.api.annotation.using
 import com.embabel.agent.api.common.OperationContext
-import com.embabel.agent.api.common.create
 import com.embabel.agent.api.common.createObject
 import com.embabel.agent.api.common.createObjectIfPossible
 import com.embabel.agent.domain.io.UserInput
@@ -44,6 +44,10 @@ data class Location(
     val lon: Double,
 
     @get:JsonPropertyDescription("location name")
+    val name: String
+)
+
+data class LocationName(
     val name: String
 )
 
@@ -99,16 +103,30 @@ data class OutFitSuggestion(
 class WhatToPutOnAgent(
 ) {
     @Action
-    fun getLocation(userInput: UserInput): Location =
+    fun getLocation(userInput: UserInput): Location? =
         using(
             LlmOptions(criteria = Auto)
-        ).createObject(
-                """
+        ).createObjectIfPossible(
+            """
              Create Location with lat and longitude from this user input including name extracted from user input 
              ${userInput.content}
         """.trimIndent()
-            )
+        )
 
+    @Action(cost = 100.0)
+    fun askForLocation(): LocationName =
+        fromForm("Where are you heading ?")
+
+
+    @Action
+    fun whereIs(locationName: LocationName): Location =
+        using(
+            LlmOptions(criteria = Auto)
+        ).createObject(
+            """
+             I am heading to ${locationName.name}. What is a name, lat and longitude of ${locationName.name} ? 
+        """.trimIndent()
+        )
 
     @Action
     fun getWeather(location: Location): WeatherReport {
